@@ -16,49 +16,40 @@ Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
 Hyper-V default location: `C:\ProgramData\Microsoft\Windows\Hyper-V`
 Recommended: Create dedicated folder on E: or V: drive for converted VMs
 
-### 4. Delete Unused VMs (Free Up Space First)
-```powershell
-# Remove these VM folders after confirming no needed data:
-Remove-Item -Recurse "V:\VMs\Fedora"
-Remove-Item -Recurse "V:\VMs\Fedora 2"
-Remove-Item -Recurse "V:\VMs\Kubuntu"
-Remove-Item -Recurse "V:\VMs\SO"
-Remove-Item -Recurse "V:\VMs\SO 2"
-Remove-Item -Recurse "E:\ESX7"  # if exists
-```
+### 4. Delete Unused VMs ✅ DONE
+~~Fedora, Fedora 2, Kubuntu, SO, SO 2, ESX7, HA2~~ - Deleted
 
-## Migration Order (10 VMs)
+## Migration Order (9 VMs)
 
 ### Phase 1: Test Migration (Low Risk)
-Validate the conversion process with non-critical VMs.
+Validate the conversion process with a non-critical VM.
 
 | # | VM | OS | RAM | Risk | Notes |
 |---|----|----|-----|------|-------|
-| 1 | HA2 | Linux 2.6.x | 4 GB | Low | Smallest, ideal test |
-| 2 | Srv2022 | Windows Server 2022 | 4 GB | Low | Small Windows test |
+| 1 | U03 | Ubuntu 64-bit | 8 GB | Low | Test candidate |
 
 ### Phase 2: Critical VMs (HIGH PRIORITY)
 These are your most important VMs - migrate carefully after testing.
 
 | # | VM | OS | RAM | Risk | Notes |
 |---|----|----|-----|------|-------|
-| 3 | **U01** | Ubuntu 64-bit | 16 GB | **HIGH** | **CRITICAL** - Full backup first |
-| 4 | **DevVM2** | Ubuntu 64-bit | 16 GB | **HIGH** | **CRITICAL** - Full backup first |
+| 2 | **U01** | Ubuntu 64-bit | 16 GB | **HIGH** | **CRITICAL** - Full backup first |
+| 3 | **DevVM2** | Ubuntu 64-bit | 16 GB | **HIGH** | **CRITICAL** - Full backup first |
 
 ### Phase 3: Lab VMs
 | # | VM | OS | RAM | Risk | Notes |
 |---|----|----|-----|------|-------|
-| 5 | GUAC | Ubuntu 64-bit | 8 GB | Medium | Guacamole server |
-| 6 | U02 | Ubuntu 64-bit | 8 GB | Medium | |
-| 7 | U03 | Ubuntu 64-bit | 8 GB | Medium | |
-| 8 | R01 | RHEL 10 64-bit | 8 GB | Medium | Verify RHEL Hyper-V support |
+| 4 | GUAC | Ubuntu 64-bit | 8 GB | Medium | Guacamole server |
+| 5 | U02 | Ubuntu 64-bit | 8 GB | Medium | |
+| 6 | R01 | RHEL 10 64-bit | 8 GB | Medium | Verify RHEL Hyper-V support |
 
 ### Phase 4: Windows Servers
 | # | VM | OS | RAM | Risk | Notes |
 |---|----|----|-----|------|-------|
-| 9 | CS01 | Windows Server 2022 | 8 GB | Low | Native Hyper-V support |
-| 10 | CS02 | Windows Server 2022 | 8 GB | Low | |
-| 11 | SQL01 | Windows Server 2022 | 8 GB | **HIGH** | Database - full backup required! |
+| 7 | CS01 | Windows Server 2022 | 8 GB | Low | Native Hyper-V support |
+| 8 | CS02 | Windows Server 2022 | 8 GB | Low | |
+| 9 | Srv2022 | Windows Server 2022 | 4 GB | **MEDIUM** | ⚠️ Files moved - may need VMX repair |
+| 10 | SQL01 | Windows Server 2022 | 8 GB | **HIGH** | ⚠️ Files moved - may need VMX repair |
 
 ## Conversion Process (Per VM)
 
