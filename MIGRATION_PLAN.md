@@ -187,7 +187,32 @@ Keep original VMware VMs until migration is verified:
 ### Linux VMs (U01, DevVM2, GUAC, U02, U03)
 - Secure Boot must be disabled (Generation 2)
 - May need to regenerate initramfs for Hyper-V drivers
-- If boot fails, try Generation 1 VM
+- **If boot fails with "boot loader did not load an operating system", use Generation 1 VM instead** (BIOS/MBR disks can't boot in Gen 2)
+- Network interface may change from `ens33` to `eth0` - update `/etc/netplan/*.yaml`
+
+### Linux Display Issues (No GUI / Black Screen)
+If X11/LightDM fails to start after migration, the issue is usually Xorg looking for wrong framebuffer device.
+
+**Symptoms:**
+- Can login via TTY (Ctrl+Alt+F2) but no GUI
+- `systemctl status lightdm` shows failure
+- Xorg log shows: `open /dev/dri/card0: No such file or directory`
+
+**Fix:**
+```bash
+sudo mkdir -p /etc/X11/xorg.conf.d
+sudo tee /etc/X11/xorg.conf.d/10-hyperv.conf << 'EOF'
+Section "Device"
+    Identifier  "Card0"
+    Driver      "fbdev"
+    Option      "fbdev" "/dev/fb0"
+EndSection
+EOF
+
+sudo systemctl restart lightdm
+```
+
+This forces Xorg to use the fbdev driver with `/dev/fb0` instead of looking for `/dev/dri/card0`.
 
 ### RHEL (R01)
 - Verify RHEL 10 Hyper-V support
